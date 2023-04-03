@@ -1,19 +1,21 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+#Rutas de autenticación
+Route::group(['prefix' => 'auth'], function () {
+    require __DIR__.'/Authentication/Authentication.php';
+});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+#Ruta de usuarios tipo cliente
+Route::group(['prefix' => 'client'], function () {
+    require __DIR__.'/Users/Client.php';
+});
+
+
+#Si se intenta acceder en rutas no existentes saldrá el siguiente mensaje
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Acceso restringido'
+    ], 404);
 });

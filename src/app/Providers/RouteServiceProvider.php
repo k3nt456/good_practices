@@ -18,6 +18,15 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     public const HOME = '/home';
+    /**
+     * The controller namespace for the application.
+     *
+     * When present, controller route declarations will automatically be prefixed with this namespace.
+     *
+     * @var string|null
+     */
+    #Necesario para no escribir la ruta completa del controlador desde el las rutas de api.php
+    protected $namespace = 'App\\Http\\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -27,8 +36,19 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
+
+            /* EJEMPLO DE COMO USAR EN CASO QUE SE QUIERA TRABAJAR CON TODOS LOS CONTROLADORES SIN CARPETA
             Route::middleware('api')
-                ->prefix('api')
+                #->prefix('api') Se elimina para que no sea el prefijo prestablecido o se cambia por otro que se desee
+                ->namespace($this->namespace)#Añadir el la ruta de controller por defecto
+                ->prefix('GP')
+                ->group(base_path('routes/api.php')); */
+
+
+            #Autenticación para los controladores
+            Route::middleware('api')
+                ->namespace($this->namespace)
+                ->prefix('GP')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
