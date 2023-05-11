@@ -4,12 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 #Rutas de autenticación
 Route::group(['prefix' => 'auth'], function () {
-    require __DIR__.'/Authentication/Authentication.php';
+    require __DIR__ . '/Authentication/Authentication.php';
 });
 
 #Ruta de usuarios tipo cliente
 Route::group(['prefix' => 'client'], function () {
-    require __DIR__.'/Users/Client.php';
+    require __DIR__ . '/Users/Client.php';
 });
 
 

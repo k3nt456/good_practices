@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Http\Requests\CreateClientRequest;
 use App\Services\Users\UserClientService;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,7 @@ class UserClientController extends Controller
         return $this->userClientService->getInfoAuth($request->all());
     }
 
-    #falta rquest
-    public function store(Request $request)
+    public function store(CreateClientRequest $request)
     {
         return $this->userClientService->create($request->all());
     }

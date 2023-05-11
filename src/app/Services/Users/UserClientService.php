@@ -27,7 +27,7 @@ class UserClientService
             DB::beginTransaction();
 
             #Validaciones
-            $validate = $this->verifyDNIExists($params);
+            $validate = $this->verifyDNIandEmailExists($params);
             if ($validate->original['code'] != 200) {
                 return $validate;
             }
@@ -48,21 +48,19 @@ class UserClientService
         }
     }
 
-    private function verifyDNIExists($params)
+    private function verifyDNIandEmailExists($params)
     {
         try {
             $users = User::where('dni', $params['dni'])
-                ->active();
-
-            #Verificación en caso se use la verificación en una persona logeada
-            if (isset(Auth::user()->id)) {
-                $users = $users->where('id', Auth::user()->id);
-            }
-
-            $users = $users->first();
+                ->orWhere('email', $params['email'])
+                ->active()->first();
 
             if (isset($users->id)) {
-                return $this->errorResponse('El DNI ingresado ya esta registrado', 400);
+                if ($users->dni == $params['dni']) {
+                    return $this->errorResponse('El DNI ingresado ya esta registrado', 400);
+                } elseif ($users->email == $params['email']) {
+                    return $this->errorResponse('El correo ingresado ya esta registrado', 400);
+                }
             }
             return $this->successResponse('OK');
         } catch (\Throwable $th) {
