@@ -64,3 +64,19 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Anotaciones
+
+Primeros pasos:
+- Tener todas la última versión del repositorio
+- Copiar al .env.example y renombrar a .env, configurara credenciales de base de datos
+- Crear una base de datos con x nombre en cotejamiento utf8mb4_unicode_ci (Solo de preferencia)
+- En caso tener errores considerar la eliminación de la migración con nombre personal_access_token ubicado en vendor/laravel/sanctum/database/migrations
+- Realizar migración con php artisan:migrate --seed
+
+Uso de passport - Necesario para uso de la app
+
+php artisan passport:keys
+php artisan passport:client
+php artisan passport:client --personal
