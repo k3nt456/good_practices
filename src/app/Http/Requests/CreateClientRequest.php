@@ -10,19 +10,12 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class CreateClientRequest extends FormRequest
 {
     use HasResponse;
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
-     */
     public function rules(): array
     {
         return [
@@ -43,6 +36,6 @@ class CreateClientRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException($this->errorResponse('Invalidated format', 400, $validator->errors()));
+        throw new HttpResponseException($this->errorResponse('Formato inválido.', 400, $validator->errors()));
     }
 }

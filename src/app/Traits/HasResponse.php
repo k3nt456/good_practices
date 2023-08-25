@@ -7,107 +7,102 @@ use Illuminate\Http\JsonResponse;
 
 trait HasResponse
 {
-    /**
-     * Default structure to prepare any json response
-     *
-     * @param string $message
-     * @param int $code
-     * @return array
-     */
-    #Estructura principal para las respuestas, se añadió un detail2 a si se quiere mandar un detalle aparte del principal, solo se usa en casos puntuales
-    public function defaultStructure($code = JsonResponse::HTTP_OK, $message = 'OK', $data = null, $bool, $detail2 = null)
+    # Estructura por defecto para los mensajes
+    public function defaultStructure($code = JsonResponse::HTTP_OK, $message = 'OK', $data = null, $bool)
     {
         return [
             'timestamp' => Carbon::now()->toDateTimeString(),
             'code' => $code,
             'status' => $bool,
-            'data'  => $this->returnMessage($message, $data, $detail2)
+            'data'  => $this->returnMessage($message, $data)
         ];
     }
 
-    /**
-     * @param string $message
-     * @param int $code
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function defaultResponse($message = 'OK', $code = JsonResponse::HTTP_NO_CONTENT)
+    # Estructura para paginación
+    private function paginationStructure($code, $message, $total, $data)
     {
-        $structure = $this->defaultStructure($code, $message, null, null);
-
-        return response()->json($structure, $code);
+        return [
+            'timestamp' => Carbon::now()->toDateTimeString(),
+            'code' => $code,
+            'status' => true,
+            'data'  => $this->returnMessage($message, $data, $total)
+        ];
     }
 
-    /**
-     * @param $data
-     * @param string $message
-     * @param int $code
-     * @return \Illuminate\Http\JsonResponse
-     */
-    #Uso para respuestas exitosas
+    # Estructura par mensaje exitoso
     public function successResponse($message = 'OK', $data = null)
     {
         $code = JsonResponse::HTTP_OK;
         $structure = $this->defaultStructure($code, $message, $data, true);
-        // $structure['data'] = $data;
 
         return response()->json($structure, $code);
     }
 
-    /**
-     * @param $errors
-     * @param string $message
-     * @param int $code
-     * @return \Illuminate\Http\JsonResponse
-     */
-    #Uso para respuestas erroneas controladas, se puede manndar un array en errors, caso contrario se manda nulo
-    public function errorResponse($message, $code, $errors = null, $detail2 = null)
+    # Estructura para mensajes de error
+    public function errorResponse($message, $code, $errors = null)
     {
         $errorsIsArray = is_array($errors);
         $errors = !$errorsIsArray || ($errorsIsArray && count($errors) > 0) ? $errors : null;
-        $structure = $this->defaultStructure($code, $message, $errors, false, $detail2);
+        $structure = $this->defaultStructure($code, $message, $errors, false);
 
         return response()->json($structure, $code);
     }
 
-    /**
-     * @param bool $bool
-     * @param string $message
-     * @param $data
-     * @return \Illuminate\Http\JsonResponse
-     */
-    #Estructura del mensaje final
-    public function returnMessage($message, $data = null, $detail2 = null)
+    # Estructura de paginación
+    public function successPaginationResponse($message = 'OK', $total, $data)
+    {
+        $code = JsonResponse::HTTP_OK;
+        $structure = $this->paginationStructure($code, $message, $total, $data);
+
+        return response()->json($structure, $code);
+    }
+
+    # Detalle para paginación
+    public function returnMessage($message, $data = null, $total = null)
     {
         if (is_null($data)) {
             return [
                 'message' => $message,
             ];
         }
-        if(!is_null($detail2)){
-            return  [
+
+        if (!is_null($total)) {
+            return [
                 'message' => $message,
-                $detail2 => $data
+                'total' => $total,
+                'detail' => $data
             ];
         }
-        return  [
+
+        return [
             'message' => $message,
             'detail' => $data
         ];
     }
 
-    /**
-     * @param $paginate
-     * @return \Illuminate\Http\JsonResponse
-     */
-    #Validacion de paginacion
+    # Verificación de paginación
     public function validatePagination($paginate)
     {
         if(empty($paginate)){
-            return [];
+            return false;
         }
-        if(!isset($paginate['perPage']) || !isset($paginate['page'])){
-            return [];
+
+        if (!isset($paginate["perPage"]) || !isset($paginate["page"])){
+            return false;
         }
+
+        if($paginate['perPage'] == 0 || $paginate['page'] == 0){
+            return false;
+        }
+
         return $paginate;
+    }
+
+    # Estructura para mensaje de error en operaciones try - catch
+    public function externalError($message, $errors = null)
+    {
+        $structure = $this->defaultStructure(500, 'Ocurrió un problema '.$message, $errors, false);
+
+        return response()->json($structure, 500);
     }
 }

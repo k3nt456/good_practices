@@ -16,9 +16,9 @@ class UserClientService
         try {
 
             $user = User::find(Auth::user());
-            return $this->successResponse('Lectura exitosa', $user);
+            return $this->successResponse('Lectura exitosa.', $user);
         } catch (\Throwable $th) {
-            throw $th;
+            return $this->externalError('durante la lectura de información del logueado.', $th->getMessage());
         }
     }
     public function create($params)
@@ -26,11 +26,9 @@ class UserClientService
         try {
             DB::beginTransaction();
 
-            #Validaciones
+            # Validaciones
             $validate = $this->verifyDNIandEmailExists($params);
-            if ($validate->original['code'] != 200) {
-                return $validate;
-            }
+            if ($validate->original['code'] != 200) return $validate;
 
             $client = User::create([
                 'dni'               =>  $params['dni'],
@@ -41,10 +39,10 @@ class UserClientService
             ]);
             $client->fresh();
             DB::commit();
-            return $this->successResponse('Cliente creado con éxito', $client);
+            return $this->successResponse('Cliente creado con éxito.', $client);
         } catch (\Throwable $th) {
             DB::rollBack();
-            throw $th;
+            return $this->externalError('durante la creación de un cliente.', $th->getMessage());
         }
     }
 
@@ -64,7 +62,7 @@ class UserClientService
             }
             return $this->successResponse('OK');
         } catch (\Throwable $th) {
-            throw $th;
+            return $this->externalError('durante verificación de información.', $th->getMessage());
         }
     }
 }

@@ -25,7 +25,7 @@ class AuthController extends Controller
 
             if (!Auth::attempt($credentials)) {
 
-                return $this->errorResponse('DNI o contraseña incorrecta, por favor verifique sus datos', 401);
+                return $this->errorResponse('DNI o contraseña incorrecta, por favor verifique sus datos.', 401);
             }
 
             $user = $params->user();
@@ -34,9 +34,9 @@ class AuthController extends Controller
 
             $token->save();
 
-            return $this->successResponse('Sesión iniciada con éxito', $this->respondWithToken($tokenResult));
+            return $this->successResponse('Sesión iniciada con éxito.', $this->respondWithToken($tokenResult));
         } catch (\Throwable $th) {
-            throw $th;
+            return $this->externalError('durante el inicio de sesión.', $th->getMessage());
         }
     }
 
@@ -44,10 +44,10 @@ class AuthController extends Controller
     {
         try {
             return [
-                'token_type' => 'bearer',
-                'access_token' => $tokenResult->accessToken,
+                'token_type'        => 'bearer',
+                'access_token'      => $tokenResult->accessToken,
                 'information_oauth_access_tokens' => $tokenResult->token,
-                'expires_in' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
+                'expires_in'        => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
             ];
         } catch (\Throwable $th) {
             throw $th;
@@ -58,7 +58,7 @@ class AuthController extends Controller
     {
         try {
             Auth::logout();
-            return $this->successResponse('Sesión terminada');
+            return $this->successResponse('Sesión terminada.');
         } catch (\Throwable $th) {
             throw $th;
         }

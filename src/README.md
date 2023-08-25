@@ -79,4 +79,4 @@ Uso de passport - Necesario para uso de la app
 
 php artisan passport:keys
 php artisan passport:client
-php artisan passport:client --personal
+php artisan passport:client --personal / Importante para validaciones internas

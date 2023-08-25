@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('tbl_user', function (Blueprint $table) {
@@ -18,15 +15,13 @@ return new class extends Migration
             $table->text('password');
             $table->text('encrypted_password')->nullable();
             $table->bigInteger('idtype_user')->unsigned();
-            $table->foreign('idtype_user')->references('id')->on('tbl_type_user');
             $table->char('email_confirmation', 1)->default(0)->comment('0:No realizado, 1:Hecho');
             $table->char('status', 1)->default(1)->comment('0:Inactivo, 1:Activo, 2:Eliminado');
+
+            $table->foreign('idtype_user')->references('id')->on('tbl_type_user');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('tbl_user');
