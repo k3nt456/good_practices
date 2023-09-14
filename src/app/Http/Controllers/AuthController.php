@@ -14,7 +14,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'resendCredentials', 'validateToken']]);
+        $this->middleware('auth:api', ['except' => ['login', 'resendCredentials', 'checkToken']]);
     }
 
     public function login(LoginRequest $params)
@@ -80,19 +80,19 @@ class AuthController extends Controller
         }
     }
 
-    /* public function validateToken()
+    public function checkToken()
     {
         try {
-            try {
-                $user = JWTAuth::parseToken()->authenticate();
-                if ($user) {
-                    return 'true';
-                }
-                return 'false';
-            } catch (JWTException $e) {
-                return 'false';
+            // Intenta autenticar al usuario utilizando el token
+            $user = Auth::guard('api')->authenticate();
+            if (!$user) {
+                // El token no es válido
+                return $this->errorResponse('Token inválido.', 401);
             }
+
+            return $this->successResponse('Token válido.', $user);
         } catch (\Throwable $th) {
+            return $this->errorResponse('Token inválido.', 401);
         }
-    } */
+    }
 }

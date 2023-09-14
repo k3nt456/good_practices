@@ -53,13 +53,17 @@ class FoodService
             $validate = $this->checkNameDuplication($params['name']);
             if (!$validate->original['status']) return $validate;
 
+            # Verificar los cálculos de los hidratos
+            $hydrates = $this->calculateHydrates($params['kcal'], $params['protein'], $params['fat']);
+            if (!$hydrates->original['status']) return $hydrates;
+
             $food = Food::create([
                 'name'          => $params['name'],
                 'amount'        => $params['amount'],
                 'kcal'          => $params['kcal'],
                 'protein'       => $params['protein'],
                 'fat'           => $params['fat'],
-                'hydrates'      => $this->calculateHydrates($params['kcal'], $params['protein'], $params['fat']),
+                'hydrates'      => $hydrates->original['data']->detail,
                 'iduser_added'  => Auth::user()->id
             ]);
             $food->fresh();
@@ -91,13 +95,17 @@ class FoodService
             $protein = $params['protein'] ?? $food->protein;
             $fat = $params['fat'] ?? $food->fat;
 
+            # Verificar los cálculos de los hidratos
+            $hydrates = $this->calculateHydrates($kcal, $protein, $fat);
+            if (!$hydrates->original['status']) return $hydrates;
+
             $food->update([
                 'name'      => $params['name'] ?? $food->name,
                 'amount'    => $params['amount'] ?? $food->amount,
                 'kcal'      => $kcal,
                 'protein'   => $protein,
                 'fat'       => $fat,
-                'hydrates'  => $this->calculateHydrates($kcal, $protein, $fat)
+                'hydrates'  => $hydrates->original['data']->detail
             ]);
 
             DB::commit();
@@ -149,7 +157,10 @@ class FoodService
     private function calculateHydrates($kcal, $protein, $fat)
     {
         $hydrates = round($kcal - (($protein * 4 + $fat * 9) / 4), 2);
-        return $hydrates;
+        if ($hydrates < 0) {
+            return $this->errorResponse('Verifique sus datos ingresados.', 400);
+        }
+        return $this->successResponse('OK', $hydrates);
     }
 
     private function checkNameDuplication($name, $id = false)

@@ -1,39 +1,46 @@
 <?php
 
-namespace App\Models\Food;
+namespace App\Models\Excercises;
 
-use App\Models\Food\TypeFood\TypeFood;
-use App\Models\User\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Food extends Model
+class Excercises extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $table = 'tbl_food';
+    protected $table = 'tbl_excercises';
 
     public $timestamps = false;
 
     protected $fillable = [
         'name',
-        'idtype_food',
-        'amount',
-        'kcal',
-        'protein',
-        'fat',
-        'hydrates',
+        'idmuscles_exercise',
+        'iddivision_execution',
+        'idspecificity',
+        'img_excercise',
+        'vid_excercise',
         'iduser_added',
         'iduser_accepts',
         'status',
     ];
 
     # Relaciones
-    public function typeFood(): HasOne
+    public function muscles(): HasOne
     {
-        return $this->hasOne(TypeFood::class, 'id', 'idtype_food');
+        return $this->hasOne(Muscles::class, 'id', 'idmuscles_exercise');
+    }
+
+    public function divisionExecution(): HasOne
+    {
+        return $this->hasOne(Muscles::class, 'id', 'iddivision_execution');
+    }
+
+    public function specificity(): HasOne
+    {
+        return $this->hasOne(Muscles::class, 'id', 'idspecificity');
     }
 
     public function userAdded(): HasOne
@@ -58,7 +65,7 @@ class Food extends Model
     }
 
     # Filtros
-    public function scopeFoodFilters($query)
+    public function scopeExcercisesFilters($query)
     {
         #Filtro de busqueda
         $query->when(

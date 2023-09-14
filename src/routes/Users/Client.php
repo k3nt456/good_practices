@@ -11,3 +11,9 @@ Route::middleware('web')->group(
 
 # MÉTODOS DE ESCRITURA
 Route::post('/', 'Users\UserClientController@store');
+
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Acceso restringido.'
+    ], 404);
+});

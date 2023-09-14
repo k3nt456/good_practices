@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('tbl_food', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->bigInteger('idtype_food')->unsigned();
             $table->integer('amount')->default(100)->comment('Cantidad por defecto');
             $table->decimal('kcal', 6, 3)->comment('Calorías');
             $table->decimal('protein', 6, 3)->comment('Proteínas');
@@ -18,10 +19,10 @@ return new class extends Migration
             $table->decimal('hydrates', 6, 3)->comment('Hidratos');
             $table->uuid('iduser_added')->comment('Usuario que añadió el alimento');
             $table->uuid('iduser_accepts')->nullable()->comment('Usuario que aceptó el alimento');
-
             $table->char('status', 1)->default(1)->comment('0:Inactivo, 1:Activo, 2:Eliminado');
             $table->timestamps();
 
+            $table->foreign('idtype_food')->references('id')->on('tbl_type_food');
             $table->foreign('iduser_added')->references('id')->on('tbl_user');
             $table->foreign('iduser_accepts')->references('id')->on('tbl_user');
         });

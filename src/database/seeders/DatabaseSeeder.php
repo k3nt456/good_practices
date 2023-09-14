@@ -12,9 +12,36 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->seedUserRelatedData();
+        $this->seedExerciseRelatedData();
+        $this->seedFoodRelatedData();
+    }
+
+    # Usuarios
+    private function seedUserRelatedData()
+    {
         $this->call([
-            \Database\Seeders\users\TypeUserSeed::class,
-            // UserSeed::class,
+            \Database\Seeders\users\UserSeed::class,
+            \Database\Seeders\users\typeUser\TypeUserSeed::class,
         ]);
     }
+
+    # Ejercicios
+    private function seedExerciseRelatedData()
+    {
+        $this->call([
+            \Database\Seeders\excercises\typeExercises\TypeExcercisesSeed::class,
+            \Database\Seeders\excercises\ExcercisesSeed::class,
+        ]);
+    }
+
+    # Alimentos
+    private function seedFoodRelatedData()
+    {
+        $this->call([
+            \Database\Seeders\food\typeFood\TypeFoodSeed::class,
+            \Database\Seeders\food\FoodSeed::class,
+        ]);
+    }
+
 }
